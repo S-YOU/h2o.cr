@@ -1,0 +1,13 @@
+name: h2o
+version: 0.0.1
+
+authors:
+    - S-YOU
+
+crystal: 0.24.2
+
+dependencies:
+    uv:
+        github: s-you/uv.cr
+
+license: MIT
