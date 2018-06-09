@@ -1,5 +1,4 @@
-require "h2o"
-require "uv"
+require "h2o_uv"
 
 
 class H2oHello < H2o
@@ -55,7 +54,7 @@ class H2oHello < H2o
   end
 
   def register_handler(hostconf : LibH2o::H2oHostconfT*, path : String, on_req : Handler) : LibH2o::H2oPathconfT*
-    pathconf = h2o_config_register_path(hostconf, path.to_unsafe, 0)
+    pathconf = h2o_config_register_path(hostconf, path, 0)
     handler = h2o_create_handler(pathconf, sizeof(LibH2o::H2oHandlerT))
     handler.value.on_req = on_req
     pathconf

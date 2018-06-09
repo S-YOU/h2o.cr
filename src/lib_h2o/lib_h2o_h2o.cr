@@ -1,6 +1,3 @@
-require "uv"
-
-@[Link(ldflags: "-lh2o -lwslay")]
 lib LibH2o
   $h2o__num_tokens : UInt64
   $h2o__tokens : H2oTokenT[100]
@@ -32,25 +29,6 @@ lib LibH2o
   alias H2oHttp1clientConnectCb = (H2oHttp1clientT*, LibC::Char*, H2oIovecT**, LibC::Int*, LibC::Int* -> H2oHttp1clientHeadCb)
   alias H2oHttp1clientHeadCb = (H2oHttp1clientT*, LibC::Char*, LibC::Int, LibC::Int, H2oIovecT, StH2oHeaderT*, LibC::Int, LibC::Int -> H2oHttp1clientBodyCb)
   alias H2oHttp1clientInformationalCb = (H2oHttp1clientT*, LibC::Int, LibC::Int, H2oIovecT, StH2oHeaderT*, LibC::Int -> LibC::Int)
-
-  alias H2oLoopT = LibUv::UvLoopT
-
-  alias UvConnectS = LibUv::UvConnectS
-  alias UvHandleS = LibUv::UvHandleS
-  alias UvIoS = LibUv::UvIoS
-  alias UvLoopS = LibUv::UvLoopS
-  alias UvShutdownS = LibUv::UvShutdownS
-  alias UvStreamS = LibUv::UvStreamS
-  alias UvTimerS = LibUv::UvTimerS
-  alias UvBufT = LibUv::UvBufT
-
-  alias UvConnectT = UvConnectS
-  alias UvHandleT = UvHandleS
-  alias UvIoT = UvIoS
-  alias UvLoopT = UvLoopS
-  alias UvShutdownT = UvShutdownS
-  alias UvStreamT = UvStreamS
-  alias UvTimerT = UvTimerS
 
   alias H2oMemcachedGetCb = (H2oIovecT, Void* -> Void)
   alias H2oMultithreadReceiverCb = (H2oMultithreadReceiverT*, H2oLinklistT* -> Void)
@@ -90,14 +68,7 @@ lib LibH2o
   alias Uint32T = X__Uint32T
   alias Uint64T = X__Uint64T
   alias Uint8T = X__Uint8T
-  alias UvAllocCb = (UvHandleT*, LibC::Int, UvBufT* -> Void)
-  alias UvCloseCb = (UvHandleT* -> Void)
-  alias UvConnectCb = (UvConnectT*, LibC::Int -> Void)
-  alias UvConnectionCb = (UvStreamT*, LibC::Int -> Void)
-  alias UvIoCb = (UvLoopS*, UvIoS*, LibC::UInt -> Void)
-  alias UvReadCb = (UvStreamT*, SsizeT, UvBufT* -> Void)
-  alias UvShutdownCb = (UvShutdownT*, LibC::Int -> Void)
-  alias UvTimerCb = (UvTimerT* -> Void)
+
   alias X_IoLockT = Void
   alias X__Int32T = LibC::Int
   alias X__Int64T = LibC::Long
@@ -124,40 +95,7 @@ lib LibH2o
     H2OSendStateFinal      = 1
     H2OSendStateError      = 2
   end
-  enum UvHandleType
-    UvUnknownHandle =  0
-    UvAsync         =  1
-    UvCheck         =  2
-    UvFsEvent       =  3
-    UvFsPoll        =  4
-    UvHandle        =  5
-    UvIdle          =  6
-    UvNamedPipe     =  7
-    UvPoll          =  8
-    UvPrepare       =  9
-    UvProcess       = 10
-    UvStream        = 11
-    UvTcp           = 12
-    UvTimer         = 13
-    UvTty           = 14
-    UvUdp           = 15
-    UvSignal        = 16
-    UvFile          = 17
-    UvHandleTypeMax = 18
-  end
-  enum UvReqType
-    UvUnknownReq  =  0
-    UvReq         =  1
-    UvConnect     =  2
-    UvWrite       =  3
-    UvShutdown    =  4
-    UvUdpSend     =  5
-    UvFs          =  6
-    UvWork        =  7
-    UvGetaddrinfo =  8
-    UvGetnameinfo =  9
-    UvReqTypeMax  = 10
-  end
+
   fun h2o__fatal(msg : LibC::Char*)
   fun h2o__hostinfo_getaddr_dispatch(req : H2oHostinfoGetaddrReqT)
   fun h2o__lcstris_core(target : LibC::Char*, test : LibC::Char*, test_len : LibC::Int) : LibC::Int
@@ -317,7 +255,6 @@ lib LibH2o
   fun h2o_multithread_send_request(receiver : H2oMultithreadReceiverT*, req : H2oMultithreadRequestT*)
   fun h2o_multithread_unregister_receiver(queue : H2oMultithreadQueueT, receiver : H2oMultithreadReceiverT*)
   fun h2o_next_token(iter : H2oIovecT*, separator : LibC::Int, element_len : LibC::Int*, value : H2oIovecT*) : LibC::Char*
-  fun h2o_now(loop : UvLoopT*) : Uint64T
   fun h2o_ostream_send_next(ostream : H2oOstreamT*, req : H2oReqT*, bufs : H2oIovecT*, bufcnt : LibC::Int, state : H2oSendStateT)
   fun h2o_process_request(req : H2oReqT*)
   fun h2o_proxy_register_configurator(conf : H2oGlobalconfT*)
@@ -453,7 +390,6 @@ lib LibH2o
   fun h2o_url_parse_relative(url : LibC::Char*, url_len : LibC::Int, result : H2oUrlT*) : LibC::Int
   fun h2o_url_resolve(pool : H2oMemPoolT*, base : H2oUrlT*, relative : H2oUrlT*, dest : H2oUrlT*) : H2oIovecT
   fun h2o_url_resolve_path(base : H2oIovecT*, relative : H2oIovecT*)
-  fun h2o_uv_socket_create(stream : UvStreamT*, close_cb : UvCloseCb) : H2oSocketT*
   fun h2o_vector__expand(pool : H2oMemPoolT*, vector : H2oVectorT*, element_size : LibC::Int, new_capacity : LibC::Int)
 
   struct Addrinfo
@@ -1135,8 +1071,8 @@ lib LibH2o
     data : Void*
     ssl : Void*
     input : H2oBufferT*
-    bytes_read : LibC::Int
-    bytes_written : LibC::Int
+    bytes_read : UInt64
+    bytes_written : UInt64
     on_close : StH2oSocketTOnClose
     _cb : StH2oSocketTCb
     _peername : StH2oSocketPeernameT*
@@ -1152,7 +1088,7 @@ lib LibH2o
     state : Uint8T
     notsent_is_minimized : Uint8T
     suggested_tls_payload_size : Uint16T
-    suggested_write_size : LibC::Int
+    suggested_write_size : UInt64
   end
 
   struct StH2oSocketTOnClose
@@ -1191,10 +1127,6 @@ lib LibH2o
     init : (-> Void*)
     per_thread : (Void*, H2oContextT* -> Void)
     final : (Void*, H2oGlobalconfT*, H2oReqT* -> H2oIovecT)
-  end
-
-  struct StH2oTimeoutBackendPropertiesT
-    timer : UvTimerT
   end
 
   struct StH2oTimeoutEntryT
@@ -1262,132 +1194,6 @@ lib LibH2o
     tm_gmtoff : LibC::Long
     tm_zone : LibC::Char*
   end
-
-  # struct UvBufT
-  #   base : LibC::Char*
-  #   len : LibC::Int
-  # end
-
-  # struct UvConnectS
-  #   data : Void*
-  #   type : UvReqType
-  #   active_queue : Void*[2]
-  #   reserved : Void*[4]
-  #   cb : UvConnectCb
-  #   handle : UvStreamT*
-  #   queue : Void*[2]
-  # end
-
-  # struct UvHandleS
-  #   data : Void*
-  #   loop :  UvLoopT*
-  #   type : UvHandleType
-  #   close_cb : UvCloseCb
-  #   handle_queue : Void*[2]
-  #   u : UvHandleSU
-  #   next_closing : UvHandleT*
-  #   flags : LibC::UInt
-  # end
-
-  # struct UvIoS
-  #   cb : UvIoCb
-  #   pending_queue : Void*[2]
-  #   watcher_queue : Void*[2]
-  #   pevents : LibC::UInt
-  #   events : LibC::UInt
-  #   fd : LibC::Int
-  # end
-
-  # struct UvLoopS
-  #   data : Void*
-  #   active_handles : LibC::UInt
-  #   handle_queue : Void*[2]
-  #   active_reqs : Void*[2]
-  #   stop_flag : LibC::UInt
-  #   flags : LibC::ULong
-  #   backend_fd : LibC::Int
-  #   pending_queue : Void*[2]
-  #   watcher_queue : Void*[2]
-  #   watchers : Void***
-  #   nwatchers : LibC::UInt
-  #   nfds : LibC::UInt
-  #   wq : Void*[2]
-  #   wq_mutex : Void*
-  #   wq_async : Void*
-  #   cloexec_lock : Void*
-  #   closing_handles : Void**
-  #   process_handles : Void*[2]
-  #   prepare_handles : Void*[2]
-  #   check_handles : Void*[2]
-  #   idle_handles : Void*[2]
-  #   async_handles : Void*[2]
-  #   async_unused : (-> Void)
-  #   async_io_watcher : Void*
-  #   async_wfd : LibC::Int
-  #   timer_heap : UvLoopSTimerHeap
-  #   timer_counter : Uint64T
-  #   time : Uint64T
-  #   signal_pipefd : LibC::Int[2]
-  #   signal_io_watcher : Void*
-  #   child_watcher : Void*
-  #   emfile_fd : LibC::Int
-  #   inotify_read_watcher : Void*
-  #   inotify_watchers : Void*
-  #   inotify_fd : LibC::Int
-  # end
-
-  # struct UvLoopSTimerHeap
-  #   min : Void*
-  #   nelts : LibC::UInt
-  # end
-
-  # struct UvShutdownS
-  #   data : Void*
-  #   type : UvReqType
-  #   active_queue : Void*[2]
-  #   reserved : Void*[4]
-  #   handle : UvStreamT*
-  #   cb : UvShutdownCb
-  # end
-
-  # struct UvStreamS
-  #   data : Void*
-  #   loop :  UvLoopT*
-  #   type : UvHandleType
-  #   close_cb : UvCloseCb
-  #   handle_queue : Void*[2]
-  #   u : UvStreamSU
-  #   next_closing : UvHandleT*
-  #   flags : LibC::UInt
-  #   write_queue_size : LibC::Int
-  #   alloc_cb : UvAllocCb
-  #   read_cb : UvReadCb
-  #   connect_req : UvConnectT*
-  #   shutdown_req : UvShutdownT*
-  #   io_watcher : UvIoT
-  #   write_queue : Void*[2]
-  #   write_completed_queue : Void*[2]
-  #   connection_cb : UvConnectionCb
-  #   delayed_error : LibC::Int
-  #   accepted_fd : LibC::Int
-  #   queued_fds : Void*
-  # end
-
-  # struct UvTimerS
-  #   data : Void*
-  #   loop :  UvLoopT*
-  #   type : UvHandleType
-  #   close_cb : UvCloseCb
-  #   handle_queue : Void*[2]
-  #   u : UvTimerSU
-  #   next_closing : UvHandleT*
-  #   flags : LibC::UInt
-  #   timer_cb : UvTimerCb
-  #   heap_node : Void*[3]
-  #   timeout : Uint64T
-  #   repeat : Uint64T
-  #   start_id : Uint64T
-  # end
 
   struct X_IoFile
     _flags : LibC::Int
@@ -1563,20 +1369,5 @@ lib LibH2o
   union StH2oMimemapTypeTData
     mime : StH2oMimemapTypeTDataMime
     dynamic : StH2oMimemapTypeTDataDynamic
-  end
-
-  union UvHandleSU
-    fd : LibC::Int
-    reserved : Void*[4]
-  end
-
-  union UvStreamSU
-    fd : LibC::Int
-    reserved : Void*[4]
-  end
-
-  union UvTimerSU
-    fd : LibC::Int
-    reserved : Void*[4]
   end
 end

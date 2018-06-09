@@ -1,4 +1,5 @@
 require "./lib_h2o"
+require "c/arpa/inet"
 
 lib LibH2o
   $stderr : Void*
@@ -9,6 +10,12 @@ end
 
 module Constants
   H2O_TOKEN_CONTENT_TYPE = LibH2o.h2o__tokens_ptr + 23
+
+  H2O_SOCKET_FLAG_DONT_READ             = 0x20
+  H2O_DEFAULT_HANDSHAKE_TIMEOUT_IN_SECS =   10
+  DEFAULT_TCP_FASTOPEN_QUEUE_LEN        = 4096
+
+  SOMAXCONN = 128
 end
 
 class H2o
@@ -17,8 +24,6 @@ class H2o
   NULL = nil
 
   alias Handler = (LibH2o::H2oHandlerT*, LibH2o::H2oReqT*) -> Int32
-  alias Listener = (LibUv::UvStreamT*, LibC::Int) -> Void
-  alias UvHandler = (LibUv::UvHandleT*) -> Void
 
   macro h2o_iovec_init(base)
     LibH2o::H2oIovecT.new(base: {{base}}, len: {{base}}.size)
@@ -34,9 +39,9 @@ class H2o
   end
   {% end %}
 
-  {% for method in %w(uv_loop_init uv_run uv_tcp_init uv_ip4_addr uv_tcp_bind uv_listen uv_accept uv_close uv_strerror) %}
+  {% for method in %w(malloc free) %}
   macro {{method.id}}(*args)
-    LibUv.{{method.id}}(\{{*args}})
+    LibC.{{method.id}}(\{{*args}})
   end
   {% end %}
 
