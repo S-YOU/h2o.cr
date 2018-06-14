@@ -1,4 +1,4 @@
-require "./lib_h2o"
+require "../lib_h2o"
 require "c/arpa/inet"
 
 lib LibH2o
@@ -14,8 +14,20 @@ module Constants
   H2O_SOCKET_FLAG_DONT_READ             = 0x20
   H2O_DEFAULT_HANDSHAKE_TIMEOUT_IN_SECS =   10
   DEFAULT_TCP_FASTOPEN_QUEUE_LEN        = 4096
+end
 
-  SOMAXCONN = 128
+module DbMethods
+  private macro get_random_number(max_rand, seed)
+    bucket_size = ((LibC::RAND_MAX + 1) / {{max_rand}}).to_u32
+    unbiased_rand_max = (bucket_size * {{max_rand}}).to_u32
+
+    ret = LibC.rand_r({{seed}})
+    while ret >= unbiased_rand_max
+      ret = LibC.rand_r({{seed}})
+    end
+
+    ret / bucket_size
+  end
 end
 
 class H2o
@@ -33,7 +45,7 @@ class H2o
     LibH2o.h2o_add_header({{req}}.offset_at(576).as(LibH2o::H2oMemPoolT*), {{req}}.offset_at(360).as(LibH2o::H2oHeadersT*), {{type}}, NULL, {{content}}, {{content}}.size)
   end
 
-  {% for method in %w(h2o_send h2o_start_response h2o_add_header) %}
+  {% for method in %w(h2o_send h2o_start_response h2o_add_header h2o_config_init h2o_config_register_host h2o_config_register_path h2o_create_handler h2o_context_init) %}
   macro {{method.id}}(*args)
     LibH2o.{{method.id}}(\{{*args}})
   end
@@ -53,10 +65,10 @@ class H2o
     def self.instance
       @@instance ||= new
     end
+
+    # forward_missing_to LibH2o
   end
 
-  private def initialize
-  end
-
-  forward_missing_to LibH2o
+  # private def initialize
+  # end
 end

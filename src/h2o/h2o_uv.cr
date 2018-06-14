@@ -1,5 +1,5 @@
 require "./h2o"
-require "./lib_h2o/lib_h2o_uv"
+require "../lib_h2o/lib_h2o_uv"
 
 class H2o
   alias Listener = (LibUv::UvStreamT*, LibC::Int) -> Void

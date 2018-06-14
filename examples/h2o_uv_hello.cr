@@ -1,5 +1,5 @@
 require "h2o_uv"
-
+require "crystal/patches"
 
 class H2oHello < H2o
   @config = LibH2o::H2oGlobalconfT.new
@@ -15,7 +15,7 @@ class H2oHello < H2o
       req.value.res.reason = "OK"
       req.value.res.content_length = body.len
       # require h2o.c extension
-      #h2o_add_header(req, H2O_TOKEN_CONTENT_TYPE, "text/plain; charset=utf-8")
+      h2o_add_header(req, H2O_TOKEN_CONTENT_TYPE, "text/plain; charset=utf-8")
       h2o_start_response(req, generator)
       h2o_send(req, pointerof(body), 1, LibH2o::H2oSendState::H2OSendStateFinal)
       0
